@@ -25,7 +25,7 @@ function knn(data, point) {
     //sort array
     array.sort((a, b) => b[1] - a[1]);
     //return the most common label
-    return array[0][0];
+    return parseInt(array[0][0]);
 
 }
 
@@ -44,9 +44,15 @@ function runAnalysis() {
   //Classification, what bucket the ball will fall into. K-Nearest Neighbors knn
   console.log('running analysis', outputs);
   const [testSet, trainingSet] = splitDataset(outputs, 10);
-  for (let i = 0; i < testSet.length; i++) {
-    const bucket = knn(trainingSet, testSet[i][0]);
-    console.log(bucket, testSet[i][3]);
-  }
+
+  let numberCorrect = 0;
+  testSet.forEach((testPoint, i) => {
+    const bucket = knn(trainingSet, testPoint[0]);
+    if (bucket === testPoint[3]) {
+      numberCorrect++;
+    }
+    console.log(bucket, testPoint[3]);
+  });
+  console.log('Accuracy:', numberCorrect / testSet.length);
 }
 
