@@ -1,12 +1,11 @@
 const outputs = [];
-const k = 3;
 
 // Euclidean distance
 function distance(pointA, pointB) {
   return Math.abs(pointA - pointB);
 }
 
-function knn(data, point) {
+function knn(data, point, k) {
   const result = data
     .map(row => [distance(row[0], point), row[3]])
     .sort((a, b) => a[0] - b[0])
@@ -43,16 +42,18 @@ function onScoreUpdate(dropPosition, bounciness, size, bucketLabel) {
 function runAnalysis() {
   //Classification, what bucket the ball will fall into. K-Nearest Neighbors knn
   console.log('running analysis', outputs);
-  const [testSet, trainingSet] = splitDataset(outputs, 10);
+  const [testSet, trainingSet] = splitDataset(outputs, 100);
 
-  let numberCorrect = 0;
-  testSet.forEach((testPoint, i) => {
-    const bucket = knn(trainingSet, testPoint[0]);
-    if (bucket === testPoint[3]) {
-      numberCorrect++;
-    }
-    console.log(bucket, testPoint[3]);
+  _.range(1, 20).forEach(k => {
+    let numberCorrect = 0;
+    testSet.forEach((testPoint, i) => {
+      const bucket = knn(trainingSet, testPoint[0], k);
+      if (bucket === testPoint[3]) {
+        numberCorrect++;
+      }
+      //console.log(bucket, testPoint[3]);
+    });
+    console.log('Accuracy: k:', k, numberCorrect / testSet.length);
   });
-  console.log('Accuracy:', numberCorrect / testSet.length);
 }
 
