@@ -2,12 +2,16 @@ const outputs = [];
 
 // Euclidean distance
 function distance(pointA, pointB) {
-  return Math.abs(pointA - pointB);
+  return _.chain(pointA)
+    .zip(pointB)
+    .map(([a, b]) => (a - b) ** 2)
+    .sum()
+    .value() ** 0.5;
 }
 
 function knn(data, point, k) {
   const result = data
-    .map(row => [distance(row[0], point), row[3]])
+    .map(row => [distance(row.slice(0, row.length - 1), point), row[row.length - 1]])
     .sort((a, b) => a[0] - b[0])
     .slice(0, k)
     .map(row => row[1])
@@ -47,7 +51,8 @@ function runAnalysis() {
   _.range(1, 20).forEach(k => {
     let numberCorrect = 0;
     testSet.forEach((testPoint, i) => {
-      const bucket = knn(trainingSet, testPoint[0], k);
+      const initialPoint = testPoint.slice(0, testPoint.length - 1);
+      const bucket = knn(trainingSet, initialPoint, k);
       if (bucket === testPoint[3]) {
         numberCorrect++;
       }
